@@ -22,8 +22,12 @@ namespace mastermind2PEMaikoVosWpf
     public partial class MainWindow : Window
     {
         Random rnd = new Random();
-        string randomColorOne, randomColorTwo, randomColorThree, randomColorFour;
-        string randomNumberColor;
+        ComboBox[] guess = new ComboBox[4];
+        Ellipse[] selectedEllipse = new Ellipse[4];
+        string[] randomNumberColor = new string[4];
+
+        string randomColorSolution;
+        int rows = 0;
         int attempts = 0;
 
         public MainWindow()
@@ -33,14 +37,14 @@ namespace mastermind2PEMaikoVosWpf
 
         private void MainWindowLoader(object sender, RoutedEventArgs e)
         {
-            randomColorOne = PickingRandomColor(rnd.Next(0, 6));
-            randomColorTwo = PickingRandomColor(rnd.Next(0, 6));
-            randomColorThree = PickingRandomColor(rnd.Next(0, 6));
-            randomColorFour = PickingRandomColor(rnd.Next(0, 6));
+            randomNumberColor[0] = PickingRandomColor(rnd.Next(0, 6));
+            randomNumberColor[1] = PickingRandomColor(rnd.Next(0, 6));
+            randomNumberColor[2] = PickingRandomColor(rnd.Next(0, 6));
+            randomNumberColor[3] = PickingRandomColor(rnd.Next(0, 6));
 
-            this.Title = $"MasterMind: attempts:{attempts}/10";
+            this.Title = $"MasterMind - attempts: {attempts}/10";
 
-            randomNumberColor = $"{randomColorOne}, {randomColorTwo}, {randomColorThree}, {randomColorFour}";
+            randomColorSolution = $"{randomNumberColor[0]}, {randomNumberColor[1]}, {randomNumberColor[2]}, {randomNumberColor[3]}";
         }
 
         private string PickingRandomColor(int randomNumber)
@@ -70,19 +74,19 @@ namespace mastermind2PEMaikoVosWpf
 
             if (changedComboBox == colorOneComboBox)
             {
-                colorFieldOne.Background = Colorindex(changedComboBox.SelectedIndex);
+                colorFieldOne.Fill = Colorindex(changedComboBox.SelectedIndex);
             }
             else if (changedComboBox == colorTwoComboBox)
             {
-                colorFieldTwo.Background = Colorindex(changedComboBox.SelectedIndex);
+                colorFieldTwo.Fill = Colorindex(changedComboBox.SelectedIndex);
             }
             else if (changedComboBox == colorThreeComboBox)
             {
-                colorFieldThree.Background = Colorindex(changedComboBox.SelectedIndex);
+                colorFieldThree.Fill = Colorindex(changedComboBox.SelectedIndex);
             }
             else if (changedComboBox == colorFourComboBox)
             {
-                colorFieldFour.Background = Colorindex(changedComboBox.SelectedIndex);
+                colorFieldFour.Fill = Colorindex(changedComboBox.SelectedIndex);
             }
         }
 
@@ -107,22 +111,22 @@ namespace mastermind2PEMaikoVosWpf
             }
         }
 
-        private void LabelColorCheck(Label colorChecker, string randomNumberColor, int position, ComboBox input)
+        private void LabelColorCheck(Ellipse colorChecker, string[] randomNumberColor, int position, ComboBox input)
         {
             string solution;
             switch (position)
             {
                 case 0:
-                    solution = randomColorOne;
+                    solution = randomNumberColor[0];
                     break;
                 case 1:
-                    solution = randomColorTwo;
+                    solution = randomNumberColor[1];
                     break;
                 case 2:
-                    solution = randomColorThree;
+                    solution = randomNumberColor[2];
                     break;
                 case 3:
-                    solution = randomColorFour;
+                    solution = randomNumberColor[3];
                     break;
                 default:
                     return;
@@ -130,35 +134,69 @@ namespace mastermind2PEMaikoVosWpf
 
             if (randomNumberColor.Contains(input.Text) && input.Text != "")
             {
-                colorChecker.BorderBrush = Brushes.Wheat;
+                colorChecker.Stroke = Brushes.Wheat;
                 if (input.Text == solution)
                 {
-                    colorChecker.BorderBrush = Brushes.DarkRed;
+                    colorChecker.Stroke = Brushes.DarkRed;
                 }
-                colorChecker.BorderThickness = new Thickness(4);
+                colorChecker.StrokeThickness = 4;
             }
             else
             {
-                colorChecker.BorderThickness = new Thickness(0);
+                colorChecker.StrokeThickness = 0;
             }
         }
 
-        private void checkCodeButton_Click(object sender, RoutedEventArgs e)
+        private void ShowGuess()
+        {
+            RowDefinition newRow = new RowDefinition();
+            newRow.Height = GridLength.Auto;
+            addRows.RowDefinitions.Add(newRow);
+
+            guess[0] = colorOneComboBox;
+            guess[1] = colorTwoComboBox;
+            guess[2] = colorThreeComboBox;
+            guess[3] = colorFourComboBox;
+
+            selectedEllipse[0] = colorFieldOne;
+            selectedEllipse[1] = colorFieldTwo;
+            selectedEllipse[2] = colorFieldThree;
+            selectedEllipse[3] = colorFieldFour;
+
+            for (int i = 0; i < guess.Length; i++)
+            {
+                Ellipse makingNewEllipse = new Ellipse();
+                makingNewEllipse.Fill = Colorindex(guess[i].SelectedIndex);
+                makingNewEllipse.Stroke = selectedEllipse[i].Stroke;
+                makingNewEllipse.StrokeThickness = selectedEllipse[i].StrokeThickness;
+                makingNewEllipse.Height = 30;
+                makingNewEllipse.Width = 30;
+                makingNewEllipse.Margin = new Thickness(2.2);
+
+                Grid.SetRow(makingNewEllipse, rows);
+                Grid.SetColumn(makingNewEllipse, i);
+
+                addRows.Children.Add(makingNewEllipse);
+            }
+            rows++;
+        }
+
+        private void CheckCodeButton_Click(object sender, RoutedEventArgs e)
         {
             LabelColorCheck(colorFieldOne, randomNumberColor, 0, colorOneComboBox);
             LabelColorCheck(colorFieldTwo, randomNumberColor, 1, colorTwoComboBox);
             LabelColorCheck(colorFieldThree, randomNumberColor, 2, colorThreeComboBox);
             LabelColorCheck(colorFieldFour, randomNumberColor, 3, colorFourComboBox);
+
+            ShowGuess();
             attempts++;
-            this.Title = $"MasterMind: attempts:{attempts}/10";
+
+            this.Title = $"MasterMind - attempts: {attempts}/10";
             if (attempts == 10)
             {
                 MessageBox.Show("Max attempts reached", $"Attempts {attempts}/10", MessageBoxButton.OK);
                 this.Close();
             }
-
-            
-
         }
     }
 }
