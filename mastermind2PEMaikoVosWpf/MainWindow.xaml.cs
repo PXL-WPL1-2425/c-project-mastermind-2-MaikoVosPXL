@@ -62,7 +62,6 @@ namespace mastermind2PEMaikoVosWpf
             randomNumberColor[3] = PickingRandomColor(rnd.Next(0, 6));
 
             randomColorSolution = $"{randomNumberColor[0]}, {randomNumberColor[1]}, {randomNumberColor[2]}, {randomNumberColor[3]}";
-            this.Title = $"MasterMind";
             totalScore.Content = $"Score: {points}/100";
             totalAttempts.Content = $"Attempts: {attempts}/10";
             showRandomColors.Text = randomColorSolution;
@@ -128,7 +127,7 @@ namespace mastermind2PEMaikoVosWpf
                 case 5:
                     return Brushes.Blue;
                 default:
-                    return Brushes.Black;
+                    return null;
             }
         }
 
@@ -220,13 +219,87 @@ namespace mastermind2PEMaikoVosWpf
 
             ShowGuess();
             attempts++;
-
             totalAttempts.Content = $"Attempts: {attempts}/10";
-            if (attempts == 10)
+
+            CheckingAttempts();
+            CheckingIfWonGame();
+        }
+
+        private void CheckingAttempts()
+        {
+            if (attempts >= 10 && !CheckingIfWonGame())
             {
-                MessageBox.Show("Max attempts reached", $"Attempts {attempts}/10", MessageBoxButton.OK);
-                this.Close();
+                MessageBoxResult result = MessageBox.Show($"You failed, the code was {randomColorSolution}.\nWant to try again?", "Failed", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    attempts = 0;
+                    points = 100;
+                    totalAttempts.Content = $"Attempts: {attempts}/10";
+                    addRows.Children.Clear();
+                    ClearingOutLabels();
+                    StartingGame();
+                }
+                else
+                {
+                    Close();
+                }
             }
+            else if (CheckingIfWonGame())
+            {
+                MessageBoxResult result = MessageBox.Show($"You won in {attempts} attempts!\nWant to try again?", "WINNER", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                if (result == MessageBoxResult.Yes)
+                {
+                    attempts = 0;
+                    points = 100;
+                    totalAttempts.Content = $"Attempts: {attempts}/10";
+                    totalScore.Content = $"Score: {points}/100";
+                    addRows.Children.Clear();
+                    ClearingOutLabels();
+                    StartingGame();
+                }
+                else
+                {
+                    Close();
+                }
+            }
+        }
+
+        private bool CheckingIfWonGame()
+        {
+            selectedEllipse[0] = colorFieldOne;
+            selectedEllipse[1] = colorFieldTwo;
+            selectedEllipse[2] = colorFieldThree;
+            selectedEllipse[3] = colorFieldFour;
+
+            if (selectedEllipse[0].Stroke == Brushes.DarkRed &&
+                selectedEllipse[1].Stroke == Brushes.DarkRed &&
+                selectedEllipse[2].Stroke == Brushes.DarkRed &&
+                selectedEllipse[3].Stroke == Brushes.DarkRed)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void ClearingOutLabels()
+        {
+            colorOneComboBox.Text = "";
+            colorTwoComboBox.Text = "";
+            colorThreeComboBox.Text = "";
+            colorFourComboBox.Text = "";
+
+            colorFieldOne.StrokeThickness = 0;
+            colorFieldTwo.StrokeThickness = 0;
+            colorFieldThree.StrokeThickness = 0;
+            colorFieldFour.StrokeThickness = 0;
+
+            colorFieldOne.Stroke = default;
+            colorFieldTwo.Stroke = default;
+            colorFieldThree.Stroke = default;
+            colorFieldFour.Stroke = default;
         }
     }
 }
