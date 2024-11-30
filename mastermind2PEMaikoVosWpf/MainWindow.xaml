@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:mastermind2PEMaikoVosWpf"
-        Title="Mastermind" Height="700" Width="550" Loaded="MainWindowLoader">
+        Title="Mastermind" Height="700" Width="550" Loaded="MainWindowLoader"
+        KeyDown="ToggleDebug">
     <Grid Background="LightGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -65,5 +66,9 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
         </Grid>
+        <Label Name="totalAttempts" Content="" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" />
+        <Label Name="totalScore" Content="" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" FontWeight="Bold"/>
+        <TextBox x:Name="showRandomColors" Text="" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" KeyDown="ToggleDebug" Width="200" Visibility="Hidden" TextAlignment="Center" Background="White" IsEnabled="False"/>
+        <TextBox x:Name="timerText" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Visibility="Hidden" TextAlignment="Center" Background="White" IsEnabled="False"/>
     </Grid>
 </Window>

@@ -27,6 +27,7 @@ namespace mastermind2PEMaikoVosWpf
         string[] randomNumberColor = new string[4];
 
         string randomColorSolution;
+        int points = 100;
         int rows = 0;
         int attempts = 0;
 
@@ -37,14 +38,34 @@ namespace mastermind2PEMaikoVosWpf
 
         private void MainWindowLoader(object sender, RoutedEventArgs e)
         {
+            StartingGame();
+        }
+
+        private void ToggleDebug(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.F12)
+            {
+                showRandomColors.Visibility = Visibility.Visible;
+                showRandomColors.Text = randomColorSolution;
+            }
+            else
+            {
+                showRandomColors.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void StartingGame()
+        {
             randomNumberColor[0] = PickingRandomColor(rnd.Next(0, 6));
             randomNumberColor[1] = PickingRandomColor(rnd.Next(0, 6));
             randomNumberColor[2] = PickingRandomColor(rnd.Next(0, 6));
             randomNumberColor[3] = PickingRandomColor(rnd.Next(0, 6));
 
-            this.Title = $"MasterMind - attempts: {attempts}/10";
-
             randomColorSolution = $"{randomNumberColor[0]}, {randomNumberColor[1]}, {randomNumberColor[2]}, {randomNumberColor[3]}";
+            this.Title = $"MasterMind";
+            totalScore.Content = $"Score: {points}/100";
+            totalAttempts.Content = $"Attempts: {attempts}/10";
+            showRandomColors.Text = randomColorSolution;
         }
 
         private string PickingRandomColor(int randomNumber)
@@ -132,18 +153,27 @@ namespace mastermind2PEMaikoVosWpf
                     return;
             }
 
-            if (randomNumberColor.Contains(input.Text) && input.Text != "")
+            if (input.Text == "" || !randomNumberColor.Contains(input.Text))
             {
+                points -= 2;
+                colorChecker.StrokeThickness = 5;
+            }
+            else if (randomNumberColor.Contains(input.Text) && input.Text != "" && input.Text != solution)
+            {
+                points -= 1;
                 colorChecker.Stroke = Brushes.Wheat;
-                if (input.Text == solution)
-                {
-                    colorChecker.Stroke = Brushes.DarkRed;
-                }
                 colorChecker.StrokeThickness = 4;
             }
             else
             {
-                colorChecker.StrokeThickness = 0;
+                colorChecker.Stroke = Brushes.DarkRed;
+                colorChecker.StrokeThickness = 4;
+            }
+            totalScore.Content = $"Score: {points}/100";
+
+            if (input.Text == "")
+            {
+                MessageBox.Show("Invalid color", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -191,7 +221,7 @@ namespace mastermind2PEMaikoVosWpf
             ShowGuess();
             attempts++;
 
-            this.Title = $"MasterMind - attempts: {attempts}/10";
+            totalAttempts.Content = $"Attempts: {attempts}/10";
             if (attempts == 10)
             {
                 MessageBox.Show("Max attempts reached", $"Attempts {attempts}/10", MessageBoxButton.OK);
