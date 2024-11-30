@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:mastermind2PEMaikoVosWpf"
         Title="Mastermind" Height="700" Width="550" Loaded="MainWindowLoader"
-        KeyDown="ToggleDebug">
+        KeyDown="ToggleDebug"
+        Closing="ClosingGame">
     <Grid Background="LightGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

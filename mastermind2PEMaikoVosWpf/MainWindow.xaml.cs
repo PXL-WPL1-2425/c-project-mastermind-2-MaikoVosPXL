@@ -25,7 +25,7 @@ namespace mastermind2PEMaikoVosWpf
         ComboBox[] guess = new ComboBox[4];
         Ellipse[] selectedEllipse = new Ellipse[4];
         string[] randomNumberColor = new string[4];
-
+        bool bypassClosingGame = false;
         string randomColorSolution;
         int points = 100;
         int rows = 0;
@@ -241,6 +241,7 @@ namespace mastermind2PEMaikoVosWpf
                 }
                 else
                 {
+                    bypassClosingGame = true;
                     Close();
                 }
             }
@@ -259,7 +260,9 @@ namespace mastermind2PEMaikoVosWpf
                 }
                 else
                 {
+                    bypassClosingGame = true;
                     Close();
+                    
                 }
             }
         }
@@ -300,6 +303,25 @@ namespace mastermind2PEMaikoVosWpf
             colorFieldTwo.Stroke = default;
             colorFieldThree.Stroke = default;
             colorFieldFour.Stroke = default;
+        }
+
+        private void ClosingGame(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (bypassClosingGame)
+            {
+                e.Cancel = false;
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show("You sure you want to stop the game?", $"{attempts}/10 attempts", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                e.Cancel = false;
+            }
+            else
+            {
+                e.Cancel = true;
+            }
         }
     }
 }
